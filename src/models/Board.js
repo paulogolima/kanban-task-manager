@@ -14,6 +14,7 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Quadro',
+    tableName: 'Quadros',
   });
   return Quadro;
 };

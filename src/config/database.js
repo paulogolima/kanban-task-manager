@@ -15,7 +15,8 @@ const conexao = new Sequelize(
     logging: false, // altere para console.log para ver as queries SQL
     define: {
       timestamps: true,
-      underscored: true,
+      createdAt: 'criadoEm',      // Avisa que a coluna em pt-br
+      updatedAt: 'atualizadoEm', // Avisa que a coluna em pt-br 
     },
   }
 );
