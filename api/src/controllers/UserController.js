@@ -4,20 +4,6 @@ import db from '../models/index.js'
 
 const User = db.User
 
-// Validação de força de senha
-const validarSenha = (senha) => {
-  if (senha.length < 8) {
-    return 'Senha deve ter no mínimo 8 caracteres'
-  }
-  if (!/[A-Z]/.test(senha)) {
-    return 'Senha deve conter pelo menos uma letra maiúscula'
-  }
-  if (!/[0-9]/.test(senha)) {
-    return 'Senha deve conter pelo menos um número'
-  }
-  return null
-}
-
 export const criar = async (req, res) => {
   try {
     const { nome, email, senha } = req.body
@@ -62,6 +48,7 @@ export const criar = async (req, res) => {
   }
 }
 
+// Login de Usuário
 export const login = async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -89,6 +76,8 @@ export const login = async (req, res) => {
   }
 }
 
+
+// Listar Usuários
 export const listar = async (req, res) => {
   try {
     const usuarios = await User.findAll({
@@ -101,6 +90,7 @@ export const listar = async (req, res) => {
   }
 }
 
+// Buscar Usuário por Id
 export const obter = async (req, res) => {
   try {
     const { id } = req.params
@@ -117,6 +107,7 @@ export const obter = async (req, res) => {
   }
 }
 
+// Atualizar Usuários
 export const atualizar = async (req, res) => {
   try {
     const { id } = req.params
@@ -160,6 +151,7 @@ export const atualizar = async (req, res) => {
   }
 }
 
+// Deletar Usuários
 export const deletar = async (req, res) => {
   try {
     const { id } = req.params
