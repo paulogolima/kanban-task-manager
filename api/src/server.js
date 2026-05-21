@@ -22,9 +22,9 @@ app.use((req, res, next) => {
 const testarConexao = async () => {
   try {
     await conexao.authenticate()
-    console.log('✅ Conexão com o banco de dados estabelecida com sucesso!')
+    console.log(' Conexão com o banco de dados estabelecida com sucesso!')
   } catch (error) {
-    console.error('❌ Erro ao conectar ao banco de dados:', error)
+    console.error('Erro ao conectar ao banco de dados:', error)
     process.exit(1)
   }
 }
@@ -40,8 +40,10 @@ app.use('/api', routes)
 // Iniciando servidor
 const iniciar = async () => {
   await testarConexao()
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`)
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor rodando em http://0.0.0.0:${PORT}`)
+    console.log(`Acesse de outro computador em: http://<seu-ip>:${PORT}`)
+    console.log(`Para máquinas virtuais/emuladores: http://10.0.2.2:${PORT}`)
   })
 }
 

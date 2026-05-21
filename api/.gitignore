@@ -1,2 +1,41 @@
+# Dependencies
 node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
 .env
+.env.local
+.env.*.local
+.env.docker
+.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+.cache/
+
+# Local development
+.sequelizerc
+
+# Docker compose (dev only)
+docker-compose.yml
+
+# Documentation (dev only)
+README_SETUP.md
+README.DOCKER.md
+STATUS_SETUP.md
+SETUP.ps1
