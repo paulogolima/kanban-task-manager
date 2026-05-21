@@ -4,11 +4,11 @@
 services:
   - type: web
     name: kanban-api
-    runtime: node
-    region: ohio  # Mude para sua região preferida
+    runtime: docker
+    region: ohio
     plan: free
-    buildCommand: cd api && npm ci
-    startCommand: cd api && npm start
+    dockerfilePath: api/Dockerfile
+    rootDir: .
     envVars:
       - key: NODE_ENV
         value: production
