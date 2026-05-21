@@ -2,37 +2,42 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Quadros', {
+    await queryInterface.createTable('cartao_etiqueta', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nome: {
-        type: Sequelize.STRING
-      },
-      descricao: {
-        type: Sequelize.TEXT
-      },
-      idUsuario: {
-        type: Sequelize.INTEGER,
+      cartao_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
         references: {
-          model: 'Usuarios',
+          model: 'Cartaos',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
-      criadoEm: {
+      etiqueta_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'Etiqueta',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
+      },
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      atualizadoEm: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Quadros');
+    await queryInterface.dropTable('cartao_etiqueta');
   }
 };
