@@ -5,6 +5,8 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       Cartao.belongsTo(models.Coluna, { foreignKey: 'coluna_id', onDelete: 'CASCADE' })
       Cartao.hasMany(models.Comentario, { foreignKey: 'cartao_id', onDelete: 'CASCADE' })
+      Cartao.hasMany(models.Atividade, { foreignKey: 'cartao_id', onDelete: 'CASCADE' })
+      Cartao.belongsToMany(models.Etiqueta, { through: 'cartao_etiqueta', foreignKey: 'cartao_id', onDelete: 'CASCADE' })
     }
   }
   Cartao.init({

@@ -3,6 +3,7 @@ import { Model } from 'sequelize'
 export default (sequelize, DataTypes) => {
   class Etiqueta extends Model {
     static associate(models) {
+      Etiqueta.belongsToMany(models.Cartao, { through: 'cartao_etiqueta', foreignKey: 'etiqueta_id', onDelete: 'CASCADE' })
     }
   }
   Etiqueta.init({

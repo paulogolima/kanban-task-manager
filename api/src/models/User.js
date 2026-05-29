@@ -5,6 +5,7 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       User.hasMany(models.Quadro, { foreignKey: 'user_id', onDelete: 'CASCADE' })
       User.hasMany(models.Comentario, { foreignKey: 'user_id', onDelete: 'CASCADE' })
+      User.hasMany(models.Atividade, { foreignKey: 'usuario_id', onDelete: 'CASCADE' })
     }
   }
   User.init({
