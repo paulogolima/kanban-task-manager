@@ -146,6 +146,68 @@ curl -X POST http://localhost:3000/api/usuarios/registrar \
   }'
 ```
 
+### Login de Usuário
+
+```bash
+curl -X POST http://localhost:3000/api/usuarios/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "paulo@email.com",
+    "senha": "senha123"
+  }'
+```
+
+Resposta esperada (login):
+```json
+{
+  "id": 1,
+  "nome": "Paulo Lima",
+  "email": "paulo@email.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+---
+
+## 🧪 Teste com Thunder Client
+
+Para testar as rotas de usuários com **Thunder Client**, siga os passos:
+
+### 1️⃣ Registrar Novo Usuário
+
+- **Método:** `POST`
+- **URL:** `http://localhost:3000/api/usuarios/registrar`
+- **Headers:** 
+  ```
+  Content-Type: application/json
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "nome": "João Silva",
+    "email": "joao@email.com",
+    "senha": "senha123"
+  }
+  ```
+
+### 2️⃣ Fazer Login
+
+- **Método:** `POST`
+- **URL:** `http://localhost:3000/api/usuarios/login`
+- **Headers:**
+  ```
+  Content-Type: application/json
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "email": "joao@email.com",
+    "senha": "senha123"
+  }
+  ```
+
+✅ Copie o `token` retornado para usar nas próximas requisições
+
 ---
 
 ## 📁 Estrutura do Projeto
