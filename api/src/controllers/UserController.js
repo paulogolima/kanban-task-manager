@@ -4,165 +4,165 @@ import db from '../models/index.js'
 
 const User = db.User
 
-export const criar = async (req, res) => {
+export const registrar = async (req, res) => {
   try {
     const { nome, email, senha } = req.body
-
-    // Validações
+    
+    // Validar campos obrigatórios
     if (!nome || !email || !senha) {
-      return res.status(400).json({ erro: 'Nome, email e senha são obrigatórios' })
+      return res.status(400).json({ erro: 'Campos obrigatórios: nome, email, senha' })
     }
 
-    if (nome.length > 100) {
-      return res.status(400).json({ erro: 'Nome muito longo (máx 100 caracteres)' })
-    }
-
-    if (email.length > 100) {
-      return res.status(400).json({ erro: 'Email muito longo' })
-    }
-
-    const erroSenha = validarSenha(senha)
-    if (erroSenha) {
-      return res.status(400).json({ erro: erroSenha })
-    }
-
+    // Verificar se email já existe
     const usuarioExistente = await User.findOne({ where: { email } })
     if (usuarioExistente) {
-      return res.status(409).json({ erro: 'Email já registrado' })
+      return res.status(409).json({ erro: 'Email já cadastrado' })
     }
 
-    const senhaHash = await bcrypt.hash(senha, 12)
+    // Criar hash da senha
+    const hash = await bcrypt.hash(senha, 10)
+    
+    // Criar usuário
+    const user = await User.create({ nome, email, senha: hash })
 
-    const usuario = await User.create({
-      nome,
-      email,
-      senha: senhaHash
+    res.status(201).json({ 
+      id: user.id, 
+      nome: user.nome, 
+      email: user.email, 
+      mensagem: 'Usuário registrado com sucesso. Faça login para obter o token.' 
     })
-
-    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
-
-    res.status(201).json({ usuario: { id: usuario.id, nome, email }, token })
   } catch (erro) {
-    console.error('Erro no registro:', erro)
-    res.status(500).json({ erro: 'Erro ao registrar usuário' })
+    console.error('Erro ao registrar:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao registrar usuário' })
   }
 }
 
-// Login de Usuário
 export const login = async (req, res) => {
   try {
     const { email, senha } = req.body
-
+    
+    // Validar campos obrigatórios
     if (!email || !senha) {
       return res.status(400).json({ erro: 'Email e senha são obrigatórios' })
     }
-
-    const usuario = await User.findOne({ where: { email } })
-    if (!usuario) {
-      return res.status(401).json({ erro: 'Credenciais inválidas' })
+    
+    // Buscar usuário por email
+    const user = await User.findOne({ where: { email } })
+    if (!user) {
+      return res.status(401).json({ erro: 'Email ou senha inválidos' })
     }
-
-    const senhaValida = await bcrypt.compare(senha, usuario.senha)
+    
+    // Comparar senha
+    const senhaValida = await bcrypt.compare(senha, user.senha)
     if (!senhaValida) {
-      return res.status(401).json({ erro: 'Credenciais inválidas' })
+      return res.status(401).json({ erro: 'Email ou senha inválidos' })
     }
-
-    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
-
-    res.json({ usuario: { id: usuario.id, nome: usuario.nome, email }, token })
+    
+    // Gerar token JWT
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
+    
+    res.json({ 
+      id: user.id, 
+      nome: user.nome, 
+      email: user.email, 
+      token 
+    })
   } catch (erro) {
-    console.error('Erro no login:', erro)
-    res.status(500).json({ erro: 'Erro ao fazer login' })
+    console.error('Erro ao fazer login:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao fazer login' })
   }
 }
 
-
-// Listar Usuários
 export const listar = async (req, res) => {
   try {
-    const usuarios = await User.findAll({
-      attributes: { exclude: ['senha'] }
+    const users = await User.findAll({ 
+      attributes: ['id', 'nome', 'email', 'createdAt', 'updatedAt'] 
     })
-    res.json(usuarios)
+    res.json(users)
   } catch (erro) {
-    console.error('Erro ao listar:', erro)
-    res.status(500).json({ erro: 'Erro ao listar usuários' })
+    console.error('Erro ao listar usuários:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao listar usuários' })
   }
 }
 
-// Buscar Usuário por Id
 export const obter = async (req, res) => {
   try {
     const { id } = req.params
-    const usuario = await User.findByPk(id, {
-      attributes: { exclude: ['senha'] }
+    
+    const user = await User.findByPk(id, {
+      attributes: ['id', 'nome', 'email', 'createdAt', 'updatedAt'],
+      include: [{ 
+        model: db.Quadro, 
+        attributes: ['id', 'titulo'],
+        include: [{ 
+          model: db.Coluna,
+          attributes: ['id', 'titulo']
+        }] 
+      }]
     })
-    if (!usuario) {
+    
+    if (!user) {
       return res.status(404).json({ erro: 'Usuário não encontrado' })
     }
-    res.json(usuario)
+    
+    res.json(user)
   } catch (erro) {
-    console.error('Erro ao obter:', erro)
-    res.status(500).json({ erro: 'Erro ao obter usuário' })
+    console.error('Erro ao obter usuário:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao obter usuário' })
   }
 }
 
-// Atualizar Usuários
 export const atualizar = async (req, res) => {
   try {
     const { id } = req.params
     const { nome, email, senha } = req.body
-
-    const usuario = await User.findByPk(id)
-    if (!usuario) {
+    
+    const user = await User.findByPk(id)
+    if (!user) {
       return res.status(404).json({ erro: 'Usuário não encontrado' })
     }
-
-    if (email && email !== usuario.email) {
-      if (email.length > 100) {
-        return res.status(400).json({ erro: 'Email muito longo' })
-      }
-      const emailExistente = await User.findOne({ where: { email } })
-      if (emailExistente) {
-        return res.status(409).json({ erro: 'Email já registrado' })
+    
+    // Se email está sendo alterado, verificar se já existe
+    if (email && email !== user.email) {
+      const usuarioExistente = await User.findOne({ where: { email } })
+      if (usuarioExistente) {
+        return res.status(409).json({ erro: 'Email já cadastrado' })
       }
     }
-
-    if (nome && nome.length > 100) {
-      return res.status(400).json({ erro: 'Nome muito longo' })
-    }
-
-    if (nome) usuario.nome = nome
-    if (email) usuario.email = email
-    if (senha) {
-      const erroSenha = validarSenha(senha)
-      if (erroSenha) {
-        return res.status(400).json({ erro: erroSenha })
-      }
-      usuario.senha = await bcrypt.hash(senha, 12)
-    }
-
-    await usuario.save()
-
-    res.json({ id: usuario.id, nome: usuario.nome, email: usuario.email })
+    
+    // Atualizar campos
+    if (nome) user.nome = nome
+    if (email) user.email = email
+    if (senha) user.senha = await bcrypt.hash(senha, 10)
+    
+    await user.save()
+    
+    res.json({ 
+      id: user.id, 
+      nome: user.nome, 
+      email: user.email,
+      mensagem: 'Usuário atualizado com sucesso'
+    })
   } catch (erro) {
-    console.error('Erro ao atualizar:', erro)
-    res.status(500).json({ erro: 'Erro ao atualizar usuário' })
+    console.error('Erro ao atualizar usuário:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao atualizar usuário' })
   }
 }
 
-// Deletar Usuários
 export const deletar = async (req, res) => {
   try {
     const { id } = req.params
-    const usuario = await User.findByPk(id)
-    if (!usuario) {
+    
+    const user = await User.findByPk(id)
+    if (!user) {
       return res.status(404).json({ erro: 'Usuário não encontrado' })
     }
-    await usuario.destroy()
-    res.status(204).send()
+    
+    await user.destroy()
+    
+    res.json({ mensagem: 'Usuário deletado com sucesso' })
   } catch (erro) {
-    console.error('Erro ao deletar:', erro)
-    res.status(500).json({ erro: 'Erro ao deletar usuário' })
+    console.error('Erro ao deletar usuário:', erro)
+    res.status(500).json({ erro: erro.message || 'Erro ao deletar usuário' })
   }
 }

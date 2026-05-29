@@ -8,12 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
     "db:migrate": "sequelize-cli db:migrate --migrations-path src/migrations --models-path src/models --config src/config/config.js",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo --migrations-path src/migrations --models-path src/models --config src/config/config.js",
-    "db:seed": "sequelize-cli db:seed --seeders-path src/seeders --config src/config/config.js",
-    "db:seed:all": "sequelize-cli db:seed:all --seeders-path src/seeders --config src/config/config.js",
-    "db:seed:undo": "sequelize-cli db:seed:undo --seeders-path src/seeders --config src/config/config.js",
-    "db:seed:undo:all": "sequelize-cli db:seed:undo:all --seeders-path src/seeders --config src/config/config.js"
+    "db:migrate:undo": "sequelize-cli db:migrate:undo --migrations-path src/migrations --models-path src/models --config src/config/config.js"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

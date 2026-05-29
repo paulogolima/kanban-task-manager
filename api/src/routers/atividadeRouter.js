@@ -4,8 +4,7 @@ import { autenticar } from '../middleware/autenticacao.js'
 
 const router = express.Router()
 
-router.get('/', AtividadeController.listar)
-router.get('/:id', AtividadeController.obter)
-router.get('/usuario/minhas-atividades', autenticar, AtividadeController.obterPorUsuario)
+router.get('/', autenticar, AtividadeController.listar)
+router.post('/', autenticar, AtividadeController.criar)
 
 export default router

@@ -1,23 +1,9 @@
 import db from '../models/index.js'
 
-const Quadro = db.Quadro
-const User = db.User
-
 export const criar = async (req, res) => {
   try {
-    const { titulo, descricao } = req.body
-    const userId = req.user.id
-
-    if (!titulo) {
-      return res.status(400).json({ erro: 'Título é obrigatório' })
-    }
-
-    const quadro = await Quadro.create({
-      titulo,
-      descricao,
-      user_id: userId
-    })
-
+    const { titulo } = req.body
+    const quadro = await db.Quadro.create({ titulo, user_id: req.user.id })
     res.status(201).json(quadro)
   } catch (erro) {
     res.status(500).json({ erro: erro.message })
@@ -26,16 +12,10 @@ export const criar = async (req, res) => {
 
 export const listar = async (req, res) => {
   try {
-    const userId = req.user.id
-
-    const quadros = await Quadro.findAll({
-      where: { user_id: userId },
-      include: [
-        { model: User, as: 'criador', attributes: ['id', 'nome', 'email'] },
-        { model: db.Coluna }
-      ]
+    const quadros = await db.Quadro.findAll({
+      where: { user_id: req.user.id },
+      include: [{ model: db.Coluna, include: [{ model: db.Cartao }] }]
     })
-
     res.json(quadros)
   } catch (erro) {
     res.status(500).json({ erro: erro.message })
@@ -44,27 +24,10 @@ export const listar = async (req, res) => {
 
 export const obter = async (req, res) => {
   try {
-    const { id } = req.params
-    const userId = req.user.id
-
-    const quadro = await Quadro.findOne({
-      where: { id },
-      include: [
-        { model: User, as: 'criador', attributes: ['id', 'nome', 'email'] },
-        { model: db.Coluna },
-        { model: db.Etiqueta },
-        { model: db.Atividade }
-      ]
+    const quadro = await db.Quadro.findByPk(req.params.id, {
+      include: [{ model: db.Coluna, include: [{ model: db.Cartao }] }]
     })
-
-    if (!quadro) {
-      return res.status(404).json({ erro: 'Quadro não encontrado' })
-    }
-
-    if (quadro.user_id !== userId && !quadro.participantes?.find(p => p.id === userId)) {
-      return res.status(403).json({ erro: 'Acesso negado' })
-    }
-
+    if (!quadro) return res.status(404).json({ erro: 'Quadro não encontrado' })
     res.json(quadro)
   } catch (erro) {
     res.status(500).json({ erro: erro.message })
@@ -73,22 +36,11 @@ export const obter = async (req, res) => {
 
 export const atualizar = async (req, res) => {
   try {
-    const { id } = req.params
-    const { titulo, descricao } = req.body
-    const userId = req.user.id
+    const quadro = await db.Quadro.findByPk(req.params.id)
+    if (!quadro) return res.status(404).json({ erro: 'Quadro não encontrado' })
+    if (quadro.user_id !== req.user.id) return res.status(403).json({ erro: 'Acesso negado' })
 
-    const quadro = await Quadro.findByPk(id)
-    if (!quadro) {
-      return res.status(404).json({ erro: 'Quadro não encontrado' })
-    }
-
-    if (quadro.user_id !== userId) {
-      return res.status(403).json({ erro: 'Acesso negado' })
-    }
-
-    if (titulo) quadro.titulo = titulo
-    if (descricao) quadro.descricao = descricao
-
+    if (req.body.titulo) quadro.titulo = req.body.titulo
     await quadro.save()
     res.json(quadro)
   } catch (erro) {
@@ -98,42 +50,12 @@ export const atualizar = async (req, res) => {
 
 export const deletar = async (req, res) => {
   try {
-    const { id } = req.params
-    const userId = req.user.id
-
-    const quadro = await Quadro.findByPk(id)
-    if (!quadro) {
-      return res.status(404).json({ erro: 'Quadro não encontrado' })
-    }
-
-    if (quadro.user_id !== userId) {
-      return res.status(403).json({ erro: 'Acesso negado' })
-    }
+    const quadro = await db.Quadro.findByPk(req.params.id)
+    if (!quadro) return res.status(404).json({ erro: 'Quadro não encontrado' })
+    if (quadro.user_id !== req.user.id) return res.status(403).json({ erro: 'Acesso negado' })
 
     await quadro.destroy()
-    res.status(204).send()
-  } catch (erro) {
-    res.status(500).json({ erro: erro.message })
-  }
-}
-
-export const adicionarParticipante = async (req, res) => {
-  try {
-    const { id } = req.params
-    const { usuario_id } = req.body
-    const userId = req.user.id
-
-    const quadro = await Quadro.findByPk(id)
-    if (!quadro) {
-      return res.status(404).json({ erro: 'Quadro não encontrado' })
-    }
-
-    if (quadro.user_id !== userId) {
-      return res.status(403).json({ erro: 'Acesso negado' })
-    }
-
-    await quadro.addParticipantes(usuario_id)
-    res.json({ mensagem: 'Participante adicionado' })
+    res.json({ mensagem: 'Quadro deletado com sucesso' })
   } catch (erro) {
     res.status(500).json({ erro: erro.message })
   }

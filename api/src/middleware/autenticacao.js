@@ -8,12 +8,6 @@ export const autenticar = (req, res, next) => {
       return res.status(401).json({ erro: 'Token não fornecido' })
     }
 
-    // Validar se JWT_SECRET existe
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET não definido!')
-      return res.status(500).json({ erro: 'Erro de configuração' })
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decoded
     next()

@@ -5,9 +5,8 @@ import { autenticar } from '../middleware/autenticacao.js'
 const router = express.Router()
 
 router.post('/', autenticar, EtiquetaController.criar)
-router.get('/', EtiquetaController.listar)
-router.get('/:id', EtiquetaController.obter)
-router.put('/:id', autenticar, EtiquetaController.atualizar)
+router.get('/', autenticar, EtiquetaController.listar)
+router.get('/:id', autenticar, EtiquetaController.obter)
 router.delete('/:id', autenticar, EtiquetaController.deletar)
 
 export default router

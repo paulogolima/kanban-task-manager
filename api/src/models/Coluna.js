@@ -1,16 +1,10 @@
-'use strict';
-import { Model } from 'sequelize';
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Coluna extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Coluna.belongsTo(models.Quadro, { foreignKey: 'quadro_id', onDelete: 'CASCADE' });
-      Coluna.hasMany(models.Cartao, { foreignKey: 'coluna_id', onDelete: 'CASCADE' });
+      Coluna.belongsTo(models.Quadro, { foreignKey: 'quadro_id', onDelete: 'CASCADE' })
+      Coluna.hasMany(models.Cartao, { foreignKey: 'coluna_id', onDelete: 'CASCADE' })
     }
   }
   Coluna.init({
@@ -26,14 +20,13 @@ export default (sequelize, DataTypes) => {
     titulo: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    posicao: DataTypes.INTEGER
+    }
   }, {
     sequelize,
     modelName: 'Coluna',
     tableName: 'Colunas',
     timestamps: true,
     underscored: true
-  });
-  return Coluna;
-};
+  })
+  return Coluna
+}

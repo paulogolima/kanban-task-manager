@@ -9,6 +9,5 @@ router.get('/', autenticar, QuadroController.listar)
 router.get('/:id', autenticar, QuadroController.obter)
 router.put('/:id', autenticar, QuadroController.atualizar)
 router.delete('/:id', autenticar, QuadroController.deletar)
-router.post('/:id/participantes', autenticar, QuadroController.adicionarParticipante)
 
 export default router

@@ -1,16 +1,10 @@
-'use strict';
-import { Model } from 'sequelize';
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Comentario extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Comentario.belongsTo(models.Cartao, { foreignKey: 'cartao_id', onDelete: 'CASCADE' });
-      Comentario.belongsTo(models.User, { foreignKey: 'usuario_id', onDelete: 'CASCADE' });
+      Comentario.belongsTo(models.Cartao, { foreignKey: 'cartao_id', onDelete: 'CASCADE' })
+      Comentario.belongsTo(models.User, { foreignKey: 'user_id', onDelete: 'CASCADE' })
     }
   }
   Comentario.init({
@@ -23,7 +17,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
-    usuario_id: {
+    user_id: {
       type: DataTypes.UUID,
       allowNull: false
     },
@@ -37,6 +31,6 @@ export default (sequelize, DataTypes) => {
     tableName: 'Comentarios',
     timestamps: true,
     underscored: true
-  });
-  return Comentario;
-};
+  })
+  return Comentario
+}
