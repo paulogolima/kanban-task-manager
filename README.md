@@ -134,79 +134,110 @@ Resposta esperada:
 { "status": "ok" }
 ```
 
-### Registrar Usuário
+---
+
+### 👥 CRUD Completo de Usuários
+
+#### 1️⃣ Registrar Novo Usuário (CREATE)
 
 ```bash
 curl -X POST http://localhost:3000/api/usuarios/registrar \
   -H "Content-Type: application/json" \
   -d '{
-    "nome": "Paulo Lima",
-    "email": "paulo@email.com",
+    "nome": "João Silva",
+    "email": "joao@email.com",
     "senha": "senha123"
   }'
 ```
 
-### Login de Usuário
+Resposta esperada:
+```json
+{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "mensagem": "Usuário registrado com sucesso. Faça login para obter o token."
+}
+```
+
+#### 2️⃣ Login (Obter Token)
 
 ```bash
 curl -X POST http://localhost:3000/api/usuarios/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "paulo@email.com",
+    "email": "joao@email.com",
     "senha": "senha123"
   }'
 ```
 
-Resposta esperada (login):
+Resposta esperada:
 ```json
 {
   "id": 1,
-  "nome": "Paulo Lima",
-  "email": "paulo@email.com",
+  "nome": "João Silva",
+  "email": "joao@email.com",
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
 
----
+✅ **Copie o token acima** para usar nas próximas requisições
 
-## 🧪 Teste com Thunder Client
+#### 3️⃣ Obter Dados do Usuário (READ)
 
-Para testar as rotas de usuários com **Thunder Client**, siga os passos:
+```bash
+curl -X GET http://localhost:3000/api/usuarios/1 \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
 
-### 1️⃣ Registrar Novo Usuário
+Resposta esperada:
+```json
+{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "createdAt": "2026-05-29T10:00:00.000Z",
+  "updatedAt": "2026-05-29T10:00:00.000Z"
+}
+```
 
-- **Método:** `POST`
-- **URL:** `http://localhost:3000/api/usuarios/registrar`
-- **Headers:** 
-  ```
-  Content-Type: application/json
-  ```
-- **Body (JSON):**
-  ```json
-  {
-    "nome": "João Silva",
-    "email": "joao@email.com",
-    "senha": "senha123"
+#### 4️⃣ Atualizar Usuário (UPDATE)
+
+```bash
+curl -X PUT http://localhost:3000/api/usuarios/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -d '{
+    "nome": "João Silva Atualizado",
+    "email": "joao.novo@email.com"
+  }'
+```
+
+Resposta esperada:
+```json
+{
+  "mensagem": "Usuário atualizado com sucesso",
+  "usuario": {
+    "id": 1,
+    "nome": "João Silva Atualizado",
+    "email": "joao.novo@email.com"
   }
-  ```
+}
+```
 
-### 2️⃣ Fazer Login
+#### 5️⃣ Deletar Usuário (DELETE)
 
-- **Método:** `POST`
-- **URL:** `http://localhost:3000/api/usuarios/login`
-- **Headers:**
-  ```
-  Content-Type: application/json
-  ```
-- **Body (JSON):**
-  ```json
-  {
-    "email": "joao@email.com",
-    "senha": "senha123"
-  }
-  ```
+```bash
+curl -X DELETE http://localhost:3000/api/usuarios/1 \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
 
-✅ Copie o `token` retornado para usar nas próximas requisições
+Resposta esperada:
+```json
+{
+  "mensagem": "Usuário deletado com sucesso"
+}
+```
 
 ---
 
@@ -312,11 +343,6 @@ O token é obtido ao fazer login do usuário.
 ---
 
 ## ‍💻 Desenvolvimento
-
-### Executar testes
-```bash
-npm test
-```
 
 ### Criar nova migration
 ```bash
