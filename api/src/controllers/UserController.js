@@ -8,21 +8,21 @@ export const registrar = async (req, res) => {
   try {
     const { nome, email, senha } = req.body
     
-    // Validar campos obrigatórios
+    
     if (!nome || !email || !senha) {
       return res.status(400).json({ erro: 'Campos obrigatórios: nome, email, senha' })
     }
 
-    // Verificar se email já existe
+    
     const usuarioExistente = await User.findOne({ where: { email } })
     if (usuarioExistente) {
       return res.status(409).json({ erro: 'Email já cadastrado' })
     }
 
-    // Criar hash da senha
+    
     const hash = await bcrypt.hash(senha, 10)
     
-    // Criar usuário
+    
     const user = await User.create({ nome, email, senha: hash })
 
     res.status(201).json({ 
@@ -41,24 +41,24 @@ export const login = async (req, res) => {
   try {
     const { email, senha } = req.body
     
-    // Validar campos obrigatórios
+    
     if (!email || !senha) {
       return res.status(400).json({ erro: 'Email e senha são obrigatórios' })
     }
     
-    // Buscar usuário por email
+    
     const user = await User.findOne({ where: { email } })
     if (!user) {
       return res.status(401).json({ erro: 'Email ou senha inválidos' })
     }
     
-    // Comparar senha
+    
     const senhaValida = await bcrypt.compare(senha, user.senha)
     if (!senhaValida) {
       return res.status(401).json({ erro: 'Email ou senha inválidos' })
     }
     
-    // Gerar token JWT
+    
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
     
     res.json({ 
@@ -122,7 +122,7 @@ export const atualizar = async (req, res) => {
       return res.status(404).json({ erro: 'Usuário não encontrado' })
     }
     
-    // Se email está sendo alterado, verificar se já existe
+    
     if (email && email !== user.email) {
       const usuarioExistente = await User.findOne({ where: { email } })
       if (usuarioExistente) {
@@ -130,7 +130,7 @@ export const atualizar = async (req, res) => {
       }
     }
     
-    // Atualizar campos
+   
     if (nome) user.nome = nome
     if (email) user.email = email
     if (senha) user.senha = await bcrypt.hash(senha, 10)

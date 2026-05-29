@@ -14,22 +14,12 @@ import atividadeRouter from './routers/atividadeRouter.js'
 const app = express()
 const PORT = process.env.PORT || 3000
 
-<<<<<<< HEAD
-db.sequelize.sync({ alter: false }).then(() => {
-  app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`)
-  })
-}).catch(erro => {
-  console.error('Erro ao conectar ao banco:', erro)
-  process.exit(1)
-=======
 app.use(helmet())
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', credentials: true }))
 app.use(express.json({ limit: '10kb' }))
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
->>>>>>> 8e28eb9 (Atualização de estrutura da API)
 })
 
 app.use('/api/usuarios', usuarioRouter)
